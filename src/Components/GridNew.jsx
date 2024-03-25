@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import "../styles/grid.css";
-import DateTimePicker from "react-datetime-picker";
+// import DateTimePicker from "react-datetime-picker";
 import Modal from "react-modal";
+import  {DateTimePicker}  from '@mui/x-date-pickers';
+import {DeleteOutline, Edit} from '@mui/icons-material'
 
 const GridNew = () => {
+  const gridRef = useRef(null);
   const [rowData, setRowData] = useState([]);
   const [newTask, setNewTask] = useState({ task_name: '', deadline: '', status: '' });
-  const [hoveredRow, setHoveredRow] = useState(-1); 
+  
+  const [hoveredRow, setHoveredRow] = useState(null); 
 
+  const [editStatus, setEditStatus] = useState({
+    editable: false
+  })
   const [displayAddRowError, setDisplayAddRowError]  = useState(false);
   const handleAddRow = () => {
     if (!newTask.task_name || !newTask.deadline || !newTask.status) {
@@ -25,10 +32,97 @@ const GridNew = () => {
       setDisplayAddRowError(false); 
   };
 
+  useEffect(() => {
+    if (gridRef.current) {
+        const gridApi = gridRef.current.api;
+        const handleRowMouseOver = (event) => {
+            setHoveredRow(event.node.rowIndex);
+            console.log("Hovered row: ", hoveredRow);
+        };
+        const handleRowMouseOut = () => {
+            setHoveredRow(null);
+        };
+
+        gridApi.addEventListener('rowMouseOver', handleRowMouseOver);
+        gridApi.addEventListener('rowMouseOut', handleRowMouseOut);
+    
+        return () => {
+          gridApi.removeEventListener('rowMouseOver', handleRowMouseOver);
+          gridApi.removeEventListener('rowMouseOut', handleRowMouseOut);
+        };
+    }
+}, [gridRef]);
+
+    
+
   const handleDeleteRow = (index) => {
     const updatedRows = rowData.filter((_, i) => i !== index);
     setRowData(updatedRows);
   };
+
+//   const handleEditRow = (rowData, rowIndex) => {
+//     const updatedRowData = rowData.map((row,index) => {
+//         if(index == rowIndex) {
+//             return {
+//                 ...row,
+//                 task_name: <input type="text" defaultValue={row.task_name} />,
+//           deadline: (
+//             <DateTimePicker
+//               renderInput={(props) => <input {...props} />}
+//               defaultValue={new Date(row.deadline)}
+//             />
+//           ),
+//           status: (
+//             <Dropdown className='mt-1'
+//             options={options} 
+//             onChange={(e) => handleInputChange(e.value, 'status')} 
+//             value={newTask.status} 
+//             placeholder="Select status" 
+//         />
+//           ),
+//           actions: <Edit onClick={() => handleEditRow(rowData, rowIndex)} />,
+//             };
+//         }
+        
+//         return row;
+//     });
+//         return updatedRowData;
+//   }
+
+const handleEditRow = (rowData, rowIndex) => {
+    if (!Array.isArray(rowData)) {
+        console.error("rowData is not an array.");
+        return;
+    }
+    setEditStatus({editable: true})
+    const updatedRowData = rowData.map((row, index) => {
+        if (index === rowIndex) {
+            return {
+                ...row,
+                task_name: <input type="text" defaultValue={row.task_name} />,
+                deadline: (
+                    <DateTimePicker
+                        renderInput={(props) => <input {...props} />}
+                        defaultValue={new Date(row.deadline)}
+                    />
+                ),
+                status: (
+                    <Dropdown
+                        className='mt-1'
+                        options={options}
+                        onChange={(e) => handleInputChange(e.value, 'status')}
+                        value={newTask.status}
+                        placeholder="Select status"
+                    />
+                ),
+                actions: <Edit onClick={() => handleEditRow(rowData, rowIndex)} />,
+            };
+        }
+        return row;
+    });
+    
+    return updatedRowData;
+};
 
   const options = [
     'Completed', 'In-progress', 'Pending'
@@ -69,29 +163,37 @@ const GridNew = () => {
     />
   );
 
-  const actionsRenderer = ({ rowIndex }) => {
-    if (rowIndex === hoveredRow) {
+  const actionsRenderer = ({ rowIndex,node }) => {
+    console.log("\nin actionsRenderer.. \nrowIndex = ", rowIndex)
+    if (rowIndex === hoveredRow && !node.group) {
       return (
-        <div>
-          {/* <button onClick={() => handleEditRow(rowIndex)}>Edit</button> */}
-          <button onClick={() => handleDeleteRow(rowIndex)}>Delete</button>
+        <div className='flex flex-row justify-between w-20 ml-7'>
+            <Edit className='hover:text-blue-600 cursor-pointer' onClick={() => handleEditRow(rowData, rowIndex)} />
+            <DeleteOutline className='hover:text-red-600 cursor-pointer'
+            onClick={()=> handleDeleteRow(rowIndex)}/>
         </div>
       );
     }
-    return null;
+    return <div></div>;
   };
-
   const columnDefs = [
     { headerName: 'Task Name', field: 'task_name', cellRenderer: taskNameRenderer },
     { headerName: 'Deadline', field: 'deadline', cellRenderer: deadlineRenderer },
     { headerName: 'Status', field: 'status', cellRenderer: statusRenderer },
-    { headerName: 'Actions', cellRenderer: actionsRenderer },
+    { headerName: 'Edit/Delete',field: 'actions', cellRenderer: actionsRenderer, cellRendererParams: { rowIndex: hoveredRow }, filter: false} ,
   ];
+  const defaultColDef = useMemo(
+    () => ({
+      sortable: true,
+      filter: true,
+    }),
+    []
+  );
 
   return (
     <div>
     <div className='text-5xl mt-10 bg-sky-700'>To-do-app</div>
-    <div className="ag-theme-alpine grid-container ml-200" style={{ height: '400px', width: '600px' }}>
+    <div className="ag-theme-alpine grid-container ml-200" style={{ height: '400px', width: '800px' }}>
       
       
       <AgGridReact
@@ -100,8 +202,13 @@ const GridNew = () => {
         rowClassRules={{
           'hovered-row': (params) => params.rowIndex === hoveredRow
         }}
-        onRowMouseOver={(event) => setHoveredRow(event.node.rowIndex)}
-        onRowMouseOut={() => setHoveredRow(-1)}
+        onCellMouseOver={(event) => {
+            setHoveredRow(event.node.rowIndex)
+            console.log("Hovered row: ", hoveredRow);
+        }}
+        onCellMouseOut={() => setHoveredRow(null)}
+        
+        defaultColDef={defaultColDef}
       />
       <div className = 'border-2 border-sky-500 mt-5 rounded-lg p-5 flex flex-row justify-between'>
         <input className='h-10 border rounded-lg pl-3'
@@ -126,6 +233,12 @@ const GridNew = () => {
         <button className='border border-sky-500 rounded-lg p-3 text-sky-800 hover:bg-sky-500 hover:text-white'
          onClick={handleAddRow}>Add Task</button>
       </div>
+      
+        <div>
+            <br></br>
+            Hovered row: {hoveredRow}
+        </div>
+      
       <Modal
       isOpen={displayAddRowError}
       onRequestClose={() => setDisplayAddRowError(false)}
