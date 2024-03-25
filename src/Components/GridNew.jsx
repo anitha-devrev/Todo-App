@@ -123,8 +123,8 @@ const GridNew = () => {
             placeholder="Select status" 
         />
         
-        <button className='border border-sky-500 rounded-lg p-3'
-         onClick={handleAddRow}>Add Row</button>
+        <button className='border border-sky-500 rounded-lg p-3 text-sky-800 hover:bg-sky-500 hover:text-white'
+         onClick={handleAddRow}>Add Task</button>
       </div>
       <Modal
       isOpen={displayAddRowError}
