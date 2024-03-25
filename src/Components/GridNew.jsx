@@ -5,7 +5,8 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import "../styles/grid.css";
-// import DateTimePicker from "react-datetime-picker";
+import DateTimePicker from "react-datetime-picker";
+import Modal from "react-modal";
 
 const GridNew = () => {
   const [rowData, setRowData] = useState([]);
@@ -90,9 +91,9 @@ const GridNew = () => {
   return (
     <div>
     <div className='text-5xl mt-10 bg-sky-700'>To-do-app</div>
-    <div className="ag-theme-alpine grid-container" style={{ height: '400px', width: '600px' }}>
+    <div className="ag-theme-alpine grid-container ml-200" style={{ height: '400px', width: '600px' }}>
       
-      <div></div>
+      
       <AgGridReact
         columnDefs={columnDefs}
         rowData={rowData}
@@ -103,28 +104,54 @@ const GridNew = () => {
         onRowMouseOut={() => setHoveredRow(-1)}
       />
       <div className = 'border-2 border-sky-500 mt-5 rounded-lg p-5 flex flex-row justify-between'>
-        <input
+        <input className='h-10 border rounded-lg pl-3'
           type="text"
           value={newTask.task_name}
           onChange={(e) => handleTextBoxInputChange(e, 'task_name')}
           placeholder="Enter Task Name"
         />
-        <input
+        <input className='h-10 border rounded-lg pl-3'
           type="text"
           value={newTask.deadline}
           onChange={(e) => handleTextBoxInputChange(e, 'deadline')}
           placeholder="Enter Deadline"
         />
-        <Dropdown options={options} onChange={(e) => handleInputChange(e.value, 'status')} value={newTask.status} placeholder="Select status" />
-        {/* <input
-          type="dropdown"
-          value={}
-          onChange={}
-          placeholder="Enter Status"
-        /> */}
-        <button onClick={handleAddRow}>Add Row</button>
+        <Dropdown className='mt-1'
+            options={options} 
+            onChange={(e) => handleInputChange(e.value, 'status')} 
+            value={newTask.status} 
+            placeholder="Select status" 
+        />
+        
+        <button className='border border-sky-500 rounded-lg p-3'
+         onClick={handleAddRow}>Add Row</button>
       </div>
-
+      <Modal
+      isOpen={displayAddRowError}
+      onRequestClose={() => setDisplayAddRowError(false)}
+    //   className='border-2 border-sky-500 mt-5 rounded-lg p-5'
+      style={{
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '300px', 
+            padding: '20px', 
+            textAlign: 'center',
+            // border: '1px solid brown',
+            background: 'linear-gradient(to right,red, brown)'
+        }
+      }}
+      >
+        <div className='flex justify-end'>
+        <button className='border-2 border-white-500 rounded-lg p-2 px-3 text-white hover:bg-white hover:text-red-600' onClick={()=> setDisplayAddRowError(false)}>X</button>
+        </div>
+        <h2 className='text-white mt-2'>Please fill in all the fields to add a task!</h2>
+        
+      </Modal>
     </div>
     </div>
   );
