@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { DataContext } from "./DataProvider";
 import Dropdown from "react-dropdown";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DateTimeField } from "@mui/x-date-pickers/DateTimeField";
+import { DateTimeField, DateTimePicker } from "@mui/x-date-pickers";
+
 import {
   Select,
   MenuItem,
@@ -18,6 +19,12 @@ const AddTask = () => {
   const {
     newTask,
     setNewtask,
+    newTaskName,
+    setNewTaskName,
+    newDeadline,
+    setNewDeadline,
+    newStatus,
+    setNewStatus,
     task_name,
     deadline,
     handleTextBoxInputChange,
@@ -26,13 +33,11 @@ const AddTask = () => {
     options,
     handleAddRow,
   } = useContext(DataContext);
+
   return (
     <div
       id="add-task"
-      className="w-80 border-2 border-sky-500 mt-5 rounded-lg p-5 flex flex-row justify-between"
-      style={{
-        width: "800px",
-      }}
+      className="w-[800px] border-2 border-sky-500 mt-5 rounded-lg p-5 flex flex-row justify-between items-center bg-white bg-opacity-40"
     >
       {/* <input className='h-10 border rounded-lg pl-3'
           type="text"
@@ -43,18 +48,30 @@ const AddTask = () => {
       <TextField
         required
         id="outlined-required"
-        value={newTask.task_name}
-        onChange={(e) => handleTextBoxInputChange(e, "task_name")}
+        value={newTaskName}
+        onChange={(e) => setNewTaskName(e.target.value)}
         label="Task Name"
         defaultValue=""
       />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DateTimeField
+        {/* <DateTimeField
           label="Enter Deadlines"
-          value={dayjs(newTask.deadline)} /*buggy*/
-          onChange={handleDateChange}
+          value={dayjs(newDeadline)} 
+          onChange={(dateValue) =>
+            setNewDeadline(dayjs(dateValue).format("MMM DD YYYY, h:mm a"))
+          }
           disablePast={true}
-          renderInput={(params) => <TextField {...params} />} // Use TextField for rendering
+          defaultValue={MM/DD/YYYY HH:MM AM}
+          renderInput={(params) => <TextField {...params} />}
+        /> */}
+        <DateTimePicker
+          label="Select Deadline"
+          value={newDeadline}
+          onChange={(newDate) =>
+            setNewDeadline(dayjs(newDate).format("MMM DD YYYY, h:mm a"))
+          }
+          disablePast={true}
+          renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>
       {/* <input className='h-10 border rounded-lg pl-3'
@@ -64,10 +81,10 @@ const AddTask = () => {
           placeholder="Enter Deadline"
         /> */}
       <Dropdown
-        className="mt-1"
+        // className="mt-1"
         options={options}
-        onChange={(e) => handleInputChange(e.value, "status")}
-        value={newTask.status}
+        onChange={(e) => setNewStatus(e.value)}
+        value={newStatus}
         placeholder="Select status"
       />
       {/* <FormControl required sx={{ m: 1, minWidth: 120 }}>

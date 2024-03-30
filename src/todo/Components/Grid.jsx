@@ -1,8 +1,10 @@
 import React, { useContext } from "react";
 import { DataContext } from "./DataProvider";
 import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css";
+import "../styles/grid.css";
 
-const Table = () => {
+const Grid = () => {
   const {
     columnDefs,
     defaultColDef,
@@ -14,8 +16,13 @@ const Table = () => {
 
   return (
     <div
-      className="ag-theme-alpine"
-      style={{ height: "400px", width: "800px" }}
+      className="ag-theme-alpine h-96 w-[800px] custom-rounded"
+      // style={{
+      //   height: "400px",
+      //   width: "800px",
+      //   backgroundColor: "black",
+      //   important: "true",
+      // }}
     >
       <AgGridReact
         columnDefs={columnDefs}
@@ -29,9 +36,10 @@ const Table = () => {
         }}
         onCellMouseOut={() => setHoveredRow(null)}
         defaultColDef={defaultColDef}
+        rowStyle={{ height: "200px" }}
       />
     </div>
   );
 };
 
-export default Table;
+export default Grid;

@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
+import { DataContext } from "../Components/DataProvider";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-
 import "react-dropdown/style.css";
 import "../styles/grid.css";
-
 import { Dropdown } from "react-dropdown";
-
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { DeleteOutline, Edit } from "@mui/icons-material";
-
 import {
   Select,
   MenuItem,
@@ -20,12 +17,14 @@ import {
   FormHelperText,
 } from "@mui/material";
 import dayjs from "dayjs";
+
 import Header from "../Components/Header";
-import Table from "../Components/Table";
+import Grid from "../Components/Grid";
 import ErrorWindow from "../Components/ErrorWindow";
 import AddTask from "../Components/AddTask";
 
 const TodoPage = () => {
+  const { editStatus } = useContext(DataContext);
   const gridRef = useRef(null);
   const [hoveredRow, setHoveredRow] = useState(null);
 
@@ -50,14 +49,15 @@ const TodoPage = () => {
     }
   }, [gridRef]);
   return (
-    <div className="mt-10 flex flex-col h-500 w-800 grid-container">
+    <div className="flex flex-col justify-center align-middle h-500 w-800 grid-container min-h-screen bg-gradient-to-br from-blue-500 to-purple-500">
       <Header />
-      <Table />
+      <Grid />
       <AddTask />
       <ErrorWindow />
       <div>
-        <br></br>
-        {console.log("\nhovered row : ", hoveredRow)} Hovered row: {hoveredRow}
+        <br />
+        <p>Hovered row: {hoveredRow}</p>
+        <p>EditStatus: {editStatus}</p>
       </div>
     </div>
   );
