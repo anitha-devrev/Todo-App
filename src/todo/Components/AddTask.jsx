@@ -37,7 +37,7 @@ const AddTask = () => {
   return (
     <div
       id="add-task"
-      className="w-[800px] border-2 border-sky-500 mt-5 rounded-lg p-5 flex flex-row justify-between items-center bg-white bg-opacity-40"
+      className="w-[800px] border-2 border-sky-500 rounded-lg p-5 flex flex-row justify-between items-center bg-white bg-opacity-40 shadow-xl"
     >
       {/* <input className='h-10 border rounded-lg pl-3'
           type="text"

@@ -210,6 +210,7 @@ const DataProvider = ({ children }) => {
       cellRendererParams: { rowIndex: hoveredRow },
       filter: false,
       editable: false,
+      sortable: false,
     },
   ];
 

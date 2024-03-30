@@ -16,7 +16,7 @@ const Grid = () => {
 
   return (
     <div
-      className="ag-theme-alpine h-96 w-[800px] custom-rounded"
+      className="ag-theme-alpine h-96 w-[800px] custom-rounded shadow-xl"
       // style={{
       //   height: "400px",
       //   width: "800px",

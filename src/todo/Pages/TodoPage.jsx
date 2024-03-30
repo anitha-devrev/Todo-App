@@ -51,14 +51,13 @@ const TodoPage = () => {
   return (
     <div className="flex flex-col justify-center align-middle h-500 w-800 grid-container min-h-screen bg-gradient-to-br from-blue-500 to-purple-500">
       <Header />
-      <Grid />
-      <AddTask />
-      <ErrorWindow />
-      <div>
-        <br />
-        <p>Hovered row: {hoveredRow}</p>
-        <p>EditStatus: {editStatus}</p>
+      <div className="flex flex-col justify-center items-center justify-evenly h-[600px] w-[900px] bg-white rounded-xl bg-opacity-20 shadow-xl">
+        <AddTask />
+        <Grid />
       </div>
+
+      <ErrorWindow />
+      {/*  */}
     </div>
   );
 };
