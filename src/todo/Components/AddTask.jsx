@@ -80,30 +80,30 @@ const AddTask = () => {
           onChange={(e) => handleTextBoxInputChange(e, 'deadline')}
           placeholder="Enter Deadline"
         /> */}
-      <Dropdown
+      {/* <Dropdown
         // className="mt-1"
         options={options}
         onChange={(e) => setNewStatus(e.value)}
         value={newStatus}
         placeholder="Select status"
-      />
-      {/* <FormControl required sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id="demo-simple-select-label">Task Status</InputLabel>
-          <Select
-            labelId="task-status"
-            id="task-status"
-            value={newTask.status}
-            label="Task Status"
-            onChange={(e) => handleTextBoxInputChange(e.value, 'status')}
-          >
+      /> */}
+      <FormControl required sx={{ m: 1, minWidth: 150 }}>
+        <InputLabel id="demo-simple-select-label">Task Status</InputLabel>
+        <Select
+          labelId="task-status"
+          id="task-status"
+          value={newStatus}
+          label="Task Status"
+          onChange={(e) => setNewStatus(e.target.value)}
+        >
           <MenuItem value={options[0]}>{options[0]}</MenuItem>
           <MenuItem value={options[1]}>{options[1]}</MenuItem>
           <MenuItem value={options[2]}>{options[2]}</MenuItem>
-          </Select>
-        </FormControl> */}
+        </Select>
+      </FormControl>
 
       <button
-        className="border border-sky-500 rounded-lg p-3 text-sky-800 hover:bg-sky-500 hover:text-white"
+        className="border border-sky-500 rounded-lg p-3 text-sky-800 hover:bg-sky-500 hover:text-white h-[57px]"
         onClick={handleAddRow}
       >
         Add Task
