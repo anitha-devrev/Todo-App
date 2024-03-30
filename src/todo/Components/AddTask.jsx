@@ -37,14 +37,8 @@ const AddTask = () => {
   return (
     <div
       id="add-task"
-      className="w-[800px] border-2 border-sky-500 rounded-lg p-5 flex flex-row justify-between items-center bg-white bg-opacity-40 shadow-xl"
+      className="w-[800px] rounded-lg p-5 flex flex-row justify-between items-center bg-white bg-opacity-40 shadow-xl"
     >
-      {/* <input className='h-10 border rounded-lg pl-3'
-          type="text"
-          value={newTask.task_name}
-          onChange={(e) => handleTextBoxInputChange(e, 'task_name')}
-          placeholder="Enter Task Name"
-        /> */}
       <TextField
         required
         id="outlined-required"
@@ -74,19 +68,6 @@ const AddTask = () => {
           renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>
-      {/* <input className='h-10 border rounded-lg pl-3'
-          type="text"
-          value={newTask.deadline}
-          onChange={(e) => handleTextBoxInputChange(e, 'deadline')}
-          placeholder="Enter Deadline"
-        /> */}
-      {/* <Dropdown
-        // className="mt-1"
-        options={options}
-        onChange={(e) => setNewStatus(e.value)}
-        value={newStatus}
-        placeholder="Select status"
-      /> */}
       <FormControl required sx={{ m: 1, minWidth: 150 }}>
         <InputLabel id="demo-simple-select-label">Task Status</InputLabel>
         <Select
@@ -103,7 +84,7 @@ const AddTask = () => {
       </FormControl>
 
       <button
-        className="border border-sky-500 rounded-lg p-3 text-sky-800 hover:bg-sky-500 hover:text-white h-[57px]"
+        className="border border-pink-500 rounded-lg p-3 text-pink-500 hover:bg-pink-500 hover:text-white h-[57px]"
         onClick={handleAddRow}
       >
         Add Task

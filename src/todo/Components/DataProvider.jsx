@@ -31,9 +31,16 @@ import dayjs from "dayjs";
 ModuleRegistry.registerModules([ClientSideRowModelModule, RichSelectModule]);
 
 const DataContext = createContext();
+const getLocalTodos = () => {
+  const storedTodos = localStorage.getItem("todos");
+  if (storedTodos) {
+    return JSON.parse(storedTodos);
+  }
+  return [];
+};
 
 const DataProvider = ({ children }) => {
-  const [rowData, setRowData] = useState([]);
+  const [rowData, setRowData] = useState(getLocalTodos);
   const [newTask, setNewTask] = useState({
     task_name: "",
     deadline: "",
@@ -46,74 +53,44 @@ const DataProvider = ({ children }) => {
   const [newTaskName, setNewTaskName] = useState("");
   const [newDeadLine, setNewDeadline] = useState("");
   const [newStatus, setNewStatus] = useState("");
+  const [editedTask, setEditedTask] = useState({
+    task_name: "",
+    deadline: "",
+    status: "",
+  });
 
-  // useEffect(() => {
-  //   const storedTodos = localStorage.getItem("todos");jjhjhh
-  //   if (storedTodos) {
-  //     setRowData(JSON.parse(storedTodos));
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   localStorage.setItem("todos", JSON.stringify(rowData));
-  // }, [rowData]);
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(rowData));
+  }, [rowData]);
 
   const taskNameRenderer = (params) => {
     console.log("\nInside taskRenderer...");
-    console.log("\nnew task...", newTask);
-    newTask.task_name = params.value;
+    console.log("\nnew task: ", newTask);
 
     if (editStatus) {
       console.log("\nafter updation new task...", newTask);
       return (
-        <input
-          type="text"
-          value={newTask.task_name}
+        <TextField
+          required
+          id="outlined-required"
+          value={editedTask.task_name}
           onChange={(e) =>
-            setNewTask({ ...newTask, task_name: e.target.value })
+            setNewTask({ ...editedTask, task_name: editedTask.task_name })
           }
           label="Task Name"
+          defaultValue=""
         />
       );
     } else {
-      return <p>{params.value}</p>;
+      return <p className="text-left">{params.value}</p>;
     }
   };
-  // const taskNameRenderer = (params) => {
-  //   const handleInputChange = (e) => {
-  //     setEditingValue(e.target.value);
-  //   };
-
-  //   const handleInputBlur = () => {
-  //     // Update the row data with the new task name
-  //     const updatedData = { ...params.data, task_name: editingValue };
-  //     params.api.applyTransaction({ update: [updatedData] });
-  //   };
-
-  //   return editStatus ? (
-  //     <input
-  //       type="text"
-  //       value={editingValue}
-  //       onChange={handleInputChange}
-  //       onBlur={handleInputBlur}
-  //       label="Task Name"
-  //     />
-  //   ) : (
-  //     <p>{params.value}</p>
-  //   );
-  // };
 
   const deadlineRenderer = (params) => {
     console.log("\nInside deadlineRenderer...");
     newTask.deadline = params.value;
     if (editStatus) {
       return (
-        // <input
-        //   type="text"
-        //   value={params.value}
-        //   onChange={(e) => handleInputChange(e, "deadline")}
-        //   label="Deadline"
-        // />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           {/* <DateTimeField
             label="Enter Deadlines"
@@ -134,7 +111,7 @@ const DataProvider = ({ children }) => {
         </LocalizationProvider>
       );
     } else {
-      return <p>{params.value}</p>;
+      return <p className="text-left">{params.value}</p>;
     }
   };
 
@@ -143,16 +120,30 @@ const DataProvider = ({ children }) => {
     newTask.status = params.value;
     if (editStatus) {
       return (
-        <Dropdown
-          className="mt-1"
-          options={options}
-          onChange={(e) => handleInputChange(e.value, "status")}
-          value={newTask.status}
-          placeholder="Select status"
-        />
+        // <Dropdown
+        //   className="mt-1"
+        //   options={options}
+        //   onChange={(e) => handleInputChange(e.value, "status")}
+        //   value={newTask.status}
+        //   placeholder="Select status"
+        // />
+        <FormControl required sx={{ m: 1, minWidth: 130 }}>
+          <InputLabel id="demo-simple-select-label">Task Status</InputLabel>
+          <Select
+            labelId="task-status"
+            id="task-status"
+            value={newStatus}
+            label="Task Status"
+            onChange={(e) => setNewStatus(e.target.value)}
+          >
+            <MenuItem value={options[0]}>{options[0]}</MenuItem>
+            <MenuItem value={options[1]}>{options[1]}</MenuItem>
+            <MenuItem value={options[2]}>{options[2]}</MenuItem>
+          </Select>
+        </FormControl>
       );
     } else {
-      return <p>{params.value}</p>;
+      return <p className="text-left">{params.value}</p>;
     }
   };
 
@@ -201,7 +192,6 @@ const DataProvider = ({ children }) => {
       cellEditorParams: {
         values: ["Completed", "In-progress", "Pending"],
       },
-      editable: true,
     },
     {
       headerName: "Actions",
@@ -218,7 +208,6 @@ const DataProvider = ({ children }) => {
     () => ({
       sortable: true,
       filter: true,
-      editable: editStatus,
     }),
     []
   );
@@ -234,11 +223,10 @@ const DataProvider = ({ children }) => {
       deadline: newDeadLine,
       status: newStatus,
     };
+
     let updatedTodoArr = [...rowData];
     updatedTodoArr.push(newTodoItem);
     setRowData(updatedTodoArr);
-    localStorage.setItem("todos", JSON.stringify(rowData));
-    // setRowData([...rowData, { ...newTask }]);
     setNewTaskName("");
     setNewDeadline("");
     setNewStatus("");
@@ -247,8 +235,11 @@ const DataProvider = ({ children }) => {
   };
 
   const handleDeleteRow = (index) => {
-    const updatedRows = rowData.filter((_, i) => i !== index);
-    setRowData(updatedRows);
+    const storedData = JSON.parse(localStorage.getItem("todos"));
+    const updatedData = storedData.filter((row, i) => {
+      return i !== index;
+    });
+    setRowData(updatedData);
   };
 
   const handleSaveRow = (params) => {
@@ -258,7 +249,9 @@ const DataProvider = ({ children }) => {
     const updatedRowData = [...rowData];
     updatedRowData[rowIndex] = {
       ...updatedRowData[rowIndex],
-      task_name: editedTaskName,
+      task_name: editedTask.task_name,
+      deadline: editedTask.deadline,
+      status: editedTask.status,
     };
     setRowData(updatedRowData);
     setEditStatus(false);
