@@ -6,6 +6,7 @@ import "../styles/grid.css";
 
 const Grid = () => {
   const {
+    gridRef,
     columnDefs,
     defaultColDef,
     rowData,
@@ -14,6 +15,9 @@ const Grid = () => {
     setHoveredRow,
   } = useContext(DataContext);
 
+  const gridOptions = {
+    stopEditingWhenCellsLoseFocus: false,
+  };
   return (
     <div
       className="ag-theme-alpine h-96 w-[800px] custom-rounded shadow-xl"
@@ -25,6 +29,7 @@ const Grid = () => {
       // }}
     >
       <AgGridReact
+        ref={gridRef}
         columnDefs={columnDefs}
         rowData={rowData}
         rowClassRules={{
@@ -36,7 +41,11 @@ const Grid = () => {
         }}
         onCellMouseOut={() => setHoveredRow(null)}
         defaultColDef={defaultColDef}
-        rowStyle={{ height: "200px" }}
+        // rowStyle={{ height: "200px" }}
+        editType="fullRow"
+        gridOptions={gridOptions}
+        suppressClickEdit
+        suppressMovableColumns
       />
     </div>
   );

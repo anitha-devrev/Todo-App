@@ -17,19 +17,12 @@ import dayjs from "dayjs";
 
 const AddTask = () => {
   const {
-    newTask,
-    setNewtask,
     newTaskName,
     setNewTaskName,
     newDeadline,
     setNewDeadline,
     newStatus,
     setNewStatus,
-    task_name,
-    deadline,
-    handleTextBoxInputChange,
-    handleDateChange,
-    handleInputChange,
     options,
     handleAddRow,
   } = useContext(DataContext);
@@ -48,16 +41,6 @@ const AddTask = () => {
         defaultValue=""
       />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {/* <DateTimeField
-          label="Enter Deadlines"
-          value={dayjs(newDeadline)} 
-          onChange={(dateValue) =>
-            setNewDeadline(dayjs(dateValue).format("MMM DD YYYY, h:mm a"))
-          }
-          disablePast={true}
-          defaultValue={MM/DD/YYYY HH:MM AM}
-          renderInput={(params) => <TextField {...params} />}
-        /> */}
         <DateTimePicker
           label="Select Deadline"
           value={newDeadline}
@@ -94,3 +77,15 @@ const AddTask = () => {
 };
 
 export default AddTask;
+{
+  /* <DateTimeField
+          label="Enter Deadlines"
+          value={dayjs(newDeadline)} 
+          onChange={(dateValue) =>
+            setNewDeadline(dayjs(dateValue).format("MMM DD YYYY, h:mm a"))
+          }
+          disablePast={true}
+          defaultValue={MM/DD/YYYY HH:MM AM}
+          renderInput={(params) => <TextField {...params} />}
+        /> */
+}

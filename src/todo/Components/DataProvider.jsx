@@ -4,6 +4,7 @@ import React, {
   useRef,
   useMemo,
   createContext,
+  useCallback,
 } from "react";
 
 import "ag-grid-community/styles/ag-grid.css";
@@ -28,6 +29,7 @@ import {
   FormHelperText,
 } from "@mui/material";
 import dayjs from "dayjs";
+import CustomDateTimeEditor from "./CustomDateTimeEditor";
 ModuleRegistry.registerModules([ClientSideRowModelModule, RichSelectModule]);
 
 const DataContext = createContext();
@@ -40,6 +42,7 @@ const getLocalTodos = () => {
 };
 
 const DataProvider = ({ children }) => {
+  const gridRef = useRef();
   const [rowData, setRowData] = useState(getLocalTodos);
   const [newTask, setNewTask] = useState({
     task_name: "",
@@ -63,98 +66,17 @@ const DataProvider = ({ children }) => {
     localStorage.setItem("todos", JSON.stringify(rowData));
   }, [rowData]);
 
-  const taskNameRenderer = (params) => {
-    console.log("\nInside taskRenderer...");
-    console.log("\nnew task: ", newTask);
-
-    if (editStatus) {
-      console.log("\nafter updation new task...", newTask);
-      return (
-        <TextField
-          required
-          id="outlined-required"
-          value={editedTask.task_name}
-          onChange={(e) =>
-            setNewTask({ ...editedTask, task_name: editedTask.task_name })
-          }
-          label="Task Name"
-          defaultValue=""
-        />
-      );
-    } else {
-      return <p className="text-left">{params.value}</p>;
-    }
-  };
-
-  const deadlineRenderer = (params) => {
-    console.log("\nInside deadlineRenderer...");
-    newTask.deadline = params.value;
-    if (editStatus) {
-      return (
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          {/* <DateTimeField
-            label="Enter Deadlines"
-            value={dayjs(newTask.deadline)} 
-            onChange={handleDateChange}
-            disablePast={true}
-            renderInput={(params) => <TextField {...params} />} // Use TextField for rendering
-          /> */}
-          <DateTimePicker
-            label="Select Deadline"
-            value={dayjs(newDeadLine)}
-            onChange={(newDate) =>
-              setNewDeadline(dayjs(newDate).format("MMM DD YYYY, h:mm a"))
-            }
-            disablePast={true}
-            renderInput={(params) => <TextField {...params} />}
-          />
-        </LocalizationProvider>
-      );
-    } else {
-      return <p className="text-left">{params.value}</p>;
-    }
-  };
-
-  const statusRenderer = (params) => {
-    console.log("\nInside statusRenderer..");
-    newTask.status = params.value;
-    if (editStatus) {
-      return (
-        // <Dropdown
-        //   className="mt-1"
-        //   options={options}
-        //   onChange={(e) => handleInputChange(e.value, "status")}
-        //   value={newTask.status}
-        //   placeholder="Select status"
-        // />
-        <FormControl required sx={{ m: 1, minWidth: 130 }}>
-          <InputLabel id="demo-simple-select-label">Task Status</InputLabel>
-          <Select
-            labelId="task-status"
-            id="task-status"
-            value={newStatus}
-            label="Task Status"
-            onChange={(e) => setNewStatus(e.target.value)}
-          >
-            <MenuItem value={options[0]}>{options[0]}</MenuItem>
-            <MenuItem value={options[1]}>{options[1]}</MenuItem>
-            <MenuItem value={options[2]}>{options[2]}</MenuItem>
-          </Select>
-        </FormControl>
-      );
-    } else {
-      return <p className="text-left">{params.value}</p>;
-    }
-  };
-
-  const actionsRenderer = ({ rowIndex, node }) => {
+  const actionsRenderer = ({ rowIndex, api }) => {
+    // const handleEditRow = () => {
+    //   api.startEditingRow({ rowIndex: rowIndex });
+    // };
     console.log("\nin actionsRenderer.. \nrowIndex = ", rowIndex);
     if (rowIndex === hoveredRow) {
       return (
         <div className="flex justify-around items-center pt-2">
           <Edit
             className="hover:text-blue-600 cursor-pointer"
-            onClick={() => handleEditRow(rowData, rowIndex)}
+            onClick={() => handleEditRow(rowIndex)}
           />
           <DeleteOutline
             className="hover:text-red-600 cursor-pointer"
@@ -176,18 +98,19 @@ const DataProvider = ({ children }) => {
       field: "task_name",
       cellEditor: "agTextCellEditor",
 
-      cellRenderer: taskNameRenderer,
+      // cellRenderer: taskNameRenderer,
     },
     {
       headerName: "Deadline",
       field: "deadline",
-      cellRenderer: deadlineRenderer,
-      cellEditor: "agDateCellEditor",
+      // cellRenderer: deadlineRenderer,
+      cellEditor: CustomDateTimeEditor,
+      cellEditorParams: { rowIndex: (params) => params.node.rowIndex },
     },
     {
       headerName: "Status",
       field: "status",
-      cellRenderer: statusRenderer,
+      // cellRenderer: statusRenderer,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: ["Completed", "In-progress", "Pending"],
@@ -208,6 +131,8 @@ const DataProvider = ({ children }) => {
     () => ({
       sortable: true,
       filter: true,
+      editable: true,
+      cellDataType: false,
     }),
     []
   );
@@ -257,14 +182,21 @@ const DataProvider = ({ children }) => {
     setEditStatus(false);
   };
 
-  const handleEditRow = (rowData, rowIndex) => {
-    console.log("\n edit is clicked");
-    setEditStatus(true);
-    if (!Array.isArray(rowData)) {
-      console.error("rowData is not an array.");
-      return;
-    }
-  };
+  // const handleEditRow = (rowData, rowIndex) => {
+  //   console.log("\n edit is clicked");
+  //   setEditStatus(true);
+  //   if (!Array.isArray(rowData)) {
+  //     console.error("rowData is not an array.");
+  //     return;
+  //   }
+  // };
+  const handleEditRow = useCallback((rowIndex) => {
+    gridRef.current.api.setFocusedCell(rowIndex, "task_name");
+    gridRef.current.api.startEditingCell({
+      rowIndex,
+      colKey: "task_name",
+    });
+  }, []);
 
   const handleInputChange = (selectedValue, field) => {
     // const { value } = event.target;
@@ -283,6 +215,7 @@ const DataProvider = ({ children }) => {
   return (
     <DataContext.Provider
       value={{
+        gridRef,
         rowData,
         setRowData,
         newTask,
@@ -300,16 +233,16 @@ const DataProvider = ({ children }) => {
         editStatus,
         setEditStatus,
         options,
-        taskNameRenderer,
-        deadlineRenderer,
-        statusRenderer,
+        // taskNameRenderer,
+        // deadlineRenderer,
+        // statusRenderer,
         actionsRenderer,
         columnDefs,
         defaultColDef,
         handleAddRow,
         handleInputChange,
         handleDeleteRow,
-        handleEditRow,
+        // handleEditRow,
         handleTextBoxInputChange,
         handleDateChange,
         handleSaveRow,
@@ -321,3 +254,86 @@ const DataProvider = ({ children }) => {
 };
 
 export { DataContext, DataProvider };
+
+// const taskNameRenderer = (params) => {
+//   console.log("\nInside taskRenderer...");
+//   console.log("\nnew task: ", newTask);
+
+//   if (editStatus) {
+//     console.log("\nafter updation new task...", newTask);
+//     return (
+//       <TextField
+//         id="outlined-required"
+//         value={editedTask.task_name}
+//         onChange={(e) =>
+//           setEditedTask({ ...editedTask, task_name: e.target.value })
+//         }
+//         label="Task Name"
+//         defaultValue=""
+//       />
+//     );
+//   } else {
+//     return <p className="text-left">{params.value}</p>;
+//   }
+// };
+
+// const deadlineRenderer = (params) => {
+//   console.log("\nInside deadlineRenderer...");
+//   newTask.deadline = params.value;
+//   if (editStatus) {
+//     return (
+//       <LocalizationProvider dateAdapter={AdapterDayjs}>
+//         {/* <DateTimeField
+//           label="Enter Deadlines"
+//           value={dayjs(newTask.deadline)}
+//           onChange={handleDateChange}
+//           disablePast={true}
+//           renderInput={(params) => <TextField {...params} />} // Use TextField for rendering
+//         /> */}
+//         <DateTimePicker
+//           label="Select Deadline"
+//           value={dayjs(newDeadLine)}
+//           onChange={(newDate) =>
+//             setNewDeadline(dayjs(newDate).format("MMM DD YYYY, h:mm a"))
+//           }
+//           disablePast={true}
+//           renderInput={(params) => <TextField {...params} />}
+//         />
+//       </LocalizationProvider>
+//     );
+//   } else {
+//     return <p className="text-left">{params.value}</p>;
+//   }
+// };
+
+// const statusRenderer = (params) => {
+//   console.log("\nInside statusRenderer..");
+//   newTask.status = params.value;
+//   if (editStatus) {
+//     return (
+//       // <Dropdown
+//       //   className="mt-1"
+//       //   options={options}
+//       //   onChange={(e) => handleInputChange(e.value, "status")}
+//       //   value={newTask.status}
+//       //   placeholder="Select status"
+//       // />
+//       <FormControl required sx={{ m: 1, minWidth: 130 }}>
+//         <InputLabel id="demo-simple-select-label">Task Status</InputLabel>
+//         <Select
+//           labelId="task-status"
+//           id="task-status"
+//           value={newStatus}
+//           label="Task Status"
+//           onChange={(e) => setNewStatus(e.target.value)}
+//         >
+//           <MenuItem value={options[0]}>{options[0]}</MenuItem>
+//           <MenuItem value={options[1]}>{options[1]}</MenuItem>
+//           <MenuItem value={options[2]}>{options[2]}</MenuItem>
+//         </Select>
+//       </FormControl>
+//     );
+//   } else {
+//     return <p className="text-left">{params.value}</p>;
+//   }
+// };
