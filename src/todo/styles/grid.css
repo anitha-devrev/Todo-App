@@ -34,3 +34,17 @@
 .my-custom-grid {
   background-color: aqua !important;
 }
+.ag-theme-alpine {
+  --ag-grid-size: 8px;
+  --ag-list-item-height: 15px;
+  --ag-background-color: rgba(255, 255, 255, 0.4);
+  --ag-selected-row-background-color: rgb(0, 255, 0, 0.4);
+  /* --ag-foreground-color: blue; */
+  --ag-border-radius: 10px;
+}
+
+.ag-theme-alpine .ag-header-cell-label {
+  font-style: oblique;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.4);
+}

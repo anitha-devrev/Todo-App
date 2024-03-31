@@ -18,6 +18,7 @@ const Grid = () => {
 
   const gridOptions = {
     stopEditingWhenCellsLoseFocus: false,
+    reactiveCustomComponents: true,
   };
   return (
     <div

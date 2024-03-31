@@ -20,6 +20,7 @@ const CustomDateTimeEditor = ({ value, api, rowIndex }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateTimePicker
+        className="h-10"
         // label="Select Deadline"
         value={dayjs(dateValue)}
         onChange={handleChange}

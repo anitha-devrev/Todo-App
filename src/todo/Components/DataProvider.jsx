@@ -182,22 +182,12 @@ const DataProvider = ({ children }) => {
         ...prevState,
         task_name: newValue,
       }));
-
-      // updatedRowData[rowIndex] = {
-      //   ...updatedRowData[rowIndex],
-      //   task_name: newValue,
-      // };
     }
     if (columnName === "status") {
       setEditedTask((prevState) => ({
         ...prevState,
         status: newValue,
       }));
-
-      // updatedRowData[rowIndex] = {
-      //   ...updatedRowData[rowIndex],
-      //   status: newValue,
-      // };
     }
   };
   const handleSaveRow = (index) => {
@@ -271,86 +261,3 @@ const DataProvider = ({ children }) => {
 };
 
 export { DataContext, DataProvider };
-
-// const taskNameRenderer = (params) => {
-//   console.log("\nInside taskRenderer...");
-//   console.log("\nnew task: ", newTask);
-
-//   if (editStatus) {
-//     console.log("\nafter updation new task...", newTask);
-//     return (
-//       <TextField
-//         id="outlined-required"
-//         value={editedTask.task_name}
-//         onChange={(e) =>
-//           setEditedTask({ ...editedTask, task_name: e.target.value })
-//         }
-//         label="Task Name"
-//         defaultValue=""
-//       />
-//     );
-//   } else {
-//     return <p className="text-left">{params.value}</p>;
-//   }
-// };
-
-// const deadlineRenderer = (params) => {
-//   console.log("\nInside deadlineRenderer...");
-//   newTask.deadline = params.value;
-//   if (editStatus) {
-//     return (
-//       <LocalizationProvider dateAdapter={AdapterDayjs}>
-//         {/* <DateTimeField
-//           label="Enter Deadlines"
-//           value={dayjs(newTask.deadline)}
-//           onChange={handleDateChange}
-//           disablePast={true}
-//           renderInput={(params) => <TextField {...params} />} // Use TextField for rendering
-//         /> */}
-//         <DateTimePicker
-//           label="Select Deadline"
-//           value={dayjs(newDeadLine)}
-//           onChange={(newDate) =>
-//             setNewDeadline(dayjs(newDate).format("MMM DD YYYY, h:mm a"))
-//           }
-//           disablePast={true}
-//           renderInput={(params) => <TextField {...params} />}
-//         />
-//       </LocalizationProvider>
-//     );
-//   } else {
-//     return <p className="text-left">{params.value}</p>;
-//   }
-// };
-
-// const statusRenderer = (params) => {
-//   console.log("\nInside statusRenderer..");
-//   newTask.status = params.value;
-//   if (editStatus) {
-//     return (
-//       // <Dropdown
-//       //   className="mt-1"
-//       //   options={options}
-//       //   onChange={(e) => handleInputChange(e.value, "status")}
-//       //   value={newTask.status}
-//       //   placeholder="Select status"
-//       // />
-//       <FormControl required sx={{ m: 1, minWidth: 130 }}>
-//         <InputLabel id="demo-simple-select-label">Task Status</InputLabel>
-//         <Select
-//           labelId="task-status"
-//           id="task-status"
-//           value={newStatus}
-//           label="Task Status"
-//           onChange={(e) => setNewStatus(e.target.value)}
-//         >
-//           <MenuItem value={options[0]}>{options[0]}</MenuItem>
-//           <MenuItem value={options[1]}>{options[1]}</MenuItem>
-//           <MenuItem value={options[2]}>{options[2]}</MenuItem>
-//         </Select>
-//       </FormControl>
-//     );
-//   } else {
-//     return <p className="text-left">{params.value}</p>;
-//   }
-// };
