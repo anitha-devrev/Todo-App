@@ -30,6 +30,8 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import CustomDateTimeEditor from "./CustomDateTimeEditor";
+import CustomTextEditor from "./CustomTextEditor";
+import CustomSelectEditor from "./CustomSelectEditor";
 ModuleRegistry.registerModules([ClientSideRowModelModule, RichSelectModule]);
 
 const DataContext = createContext();
@@ -49,7 +51,7 @@ const DataProvider = ({ children }) => {
     deadline: "",
     status: "",
   });
-  // const [currentEditNode, setCurrentEditNode] = useState(-1);
+
   const [hoveredRow, setHoveredRow] = useState(null);
   const [displayAddRowError, setDisplayAddRowError] = useState(false);
   const [editStatus, setEditStatus] = useState(false);
@@ -62,15 +64,13 @@ const DataProvider = ({ children }) => {
     deadline: "",
     status: "",
   });
+  const updatedRowData = [...rowData];
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(rowData));
   }, [rowData]);
 
   const actionsRenderer = ({ rowIndex, api }) => {
-    // const handleEditRow = () => {
-    //   api.startEditingRow({ rowIndex: rowIndex });
-    // };
     console.log("\nin actionsRenderer.. \nrowIndex = ", rowIndex);
     if (rowIndex === hoveredRow) {
       return (
@@ -97,28 +97,21 @@ const DataProvider = ({ children }) => {
     {
       headerName: "Task Name",
       field: "task_name",
-      cellEditor: "agTextCellEditor",
-
-      // cellRenderer: taskNameRenderer,
+      cellEditor: CustomTextEditor,
     },
     {
       headerName: "Deadline",
       field: "deadline",
-      // cellRenderer: deadlineRenderer,
       cellEditor: CustomDateTimeEditor,
       cellEditorParams: { rowIndex: hoveredRow },
-      // cellEditorParams: {
-      //   getRowIndex: (params) => params.node.rowIndex, // Pass a function to get the rowIndex
-      // },
     },
     {
       headerName: "Status",
       field: "status",
-      // cellRenderer: statusRenderer,
-      cellEditor: "agSelectCellEditor",
-      cellEditorParams: {
-        values: ["Completed", "In-progress", "Pending"],
-      },
+      cellEditor: CustomSelectEditor,
+      // cellEditorParams: {
+      //   values: ["Completed", "In-progress", "Pending"],
+      // },
     },
     {
       headerName: "Actions",
@@ -170,30 +163,68 @@ const DataProvider = ({ children }) => {
     });
     setRowData(updatedData);
   };
+  const onCellValueChanged = (event) => {
+    const newValue = event.newValue;
+    const columnName = event.column.colId;
+    const rowIndex = event.node.rowIndex;
 
+    console.log("New value:", newValue);
+    console.log("Column name:", columnName);
+    console.log("Row index:", rowIndex);
+
+    // setEditedTask((prevState) => ({
+    //   ...prevState,
+    //   [columnName]: newValue,
+    // }));
+
+    if (columnName === "task_name") {
+      setEditedTask((prevState) => ({
+        ...prevState,
+        task_name: newValue,
+      }));
+
+      // updatedRowData[rowIndex] = {
+      //   ...updatedRowData[rowIndex],
+      //   task_name: newValue,
+      // };
+    }
+    if (columnName === "status") {
+      setEditedTask((prevState) => ({
+        ...prevState,
+        status: newValue,
+      }));
+
+      // updatedRowData[rowIndex] = {
+      //   ...updatedRowData[rowIndex],
+      //   status: newValue,
+      // };
+    }
+  };
   const handleSaveRow = (index) => {
-    // const editedTaskName = params.value;
-    // const rowIndex = rowData.findIndex((row) => row === params.data);
-    console.log("\nEdited Deadline: ", editedTask.deadline);
-    const updatedRowData = [...rowData];
-    updatedRowData[index] = {
-      ...updatedRowData[index],
-      deadline: editedTask.deadline,
-    };
+    console.log("\nEdited taskname: ", updatedRowData[index].task_name);
+    console.log("\nEdited Deadline: ", updatedRowData[index].deadline);
+    console.log("\nEdited status: ", updatedRowData[index].status);
+
+    if (editedTask.task_name)
+      updatedRowData[index] = {
+        ...updatedRowData[index],
+        task_name: editedTask.task_name,
+      };
+    if (editedTask.deadline)
+      updatedRowData[index] = {
+        ...updatedRowData[index],
+        deadline: editedTask.deadline,
+      };
+    if (editedTask.status)
+      updatedRowData[index] = {
+        ...updatedRowData[index],
+        status: editedTask.status,
+      };
     setRowData(updatedRowData);
     setEditStatus(false);
   };
 
-  // const handleEditRow = (rowData, rowIndex) => {
-  //   console.log("\n edit is clicked");
-  //   setEditStatus(true);
-  //   if (!Array.isArray(rowData)) {
-  //     console.error("rowData is not an array.");
-  //     return;
-  //   }
-  // };
   const handleEditRow = useCallback((rowIndex) => {
-    // setCurrentEditNode(rowIndex);
     gridRef.current.api.setFocusedCell(rowIndex, "task_name");
     gridRef.current.api.startEditingCell({
       rowIndex,
@@ -201,20 +232,6 @@ const DataProvider = ({ children }) => {
     });
   }, []);
 
-  // const handleInputChange = (selectedValue, field) => {
-  //   // const { value } = event.target;
-  //   setNewTask({ ...newTask, [field]: selectedValue });
-  // };
-  // const handleTextBoxInputChange = (event, field) => {
-  //   const { value } = event.target;
-  //   // setNewTask({ ...newTask, [field]: value });
-  //   setNewTask((prevState) => ({ ...prevState, [field]: value }));
-  // };
-  // const handleDateChange = (dateValue) => {
-  //   const formattedDate = dayjs(dateValue).format("MMM DD YYYY, h:mm a");
-  //   setNewDeadline(formattedDate);
-  //   // setNewTask({ ...newTask, deadline: formattedDate });
-  // };
   return (
     <DataContext.Provider
       value={{
@@ -238,19 +255,13 @@ const DataProvider = ({ children }) => {
         editedTask,
         setEditedTask,
         options,
-        // taskNameRenderer,
-        // deadlineRenderer,
-        // statusRenderer,
         actionsRenderer,
         columnDefs,
         defaultColDef,
         handleAddRow,
-        // handleInputChange,
         handleDeleteRow,
-        // handleEditRow,
-        // handleTextBoxInputChange,
-        // handleDateChange,
         handleSaveRow,
+        onCellValueChanged,
       }}
     >
       {children}

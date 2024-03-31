@@ -13,6 +13,7 @@ const Grid = () => {
     setRowData,
     hoveredRow,
     setHoveredRow,
+    onCellValueChanged,
   } = useContext(DataContext);
 
   const gridOptions = {
@@ -44,6 +45,7 @@ const Grid = () => {
         // rowStyle={{ height: "200px" }}
         editType="fullRow"
         gridOptions={gridOptions}
+        onCellValueChanged={onCellValueChanged}
         suppressClickEdit
         suppressMovableColumns
       />
