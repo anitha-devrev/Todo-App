@@ -221,6 +221,7 @@ const DataProvider = ({ children }) => {
         status: editedTask.status,
       };
     setRowData(updatedRowData);
+    setEditedTask({ task_name: "", deadline: "", status: "" });
     setEditStatus(false);
   };
 
