@@ -49,6 +49,7 @@ const DataProvider = ({ children }) => {
     deadline: "",
     status: "",
   });
+  // const [currentEditNode, setCurrentEditNode] = useState(-1);
   const [hoveredRow, setHoveredRow] = useState(null);
   const [displayAddRowError, setDisplayAddRowError] = useState(false);
   const [editStatus, setEditStatus] = useState(false);
@@ -105,7 +106,10 @@ const DataProvider = ({ children }) => {
       field: "deadline",
       // cellRenderer: deadlineRenderer,
       cellEditor: CustomDateTimeEditor,
-      cellEditorParams: { rowIndex: (params) => params.node.rowIndex },
+      cellEditorParams: { rowIndex: hoveredRow },
+      // cellEditorParams: {
+      //   getRowIndex: (params) => params.node.rowIndex, // Pass a function to get the rowIndex
+      // },
     },
     {
       headerName: "Status",
@@ -167,16 +171,14 @@ const DataProvider = ({ children }) => {
     setRowData(updatedData);
   };
 
-  const handleSaveRow = (params) => {
-    const editedTaskName = params.value;
-    const rowIndex = rowData.findIndex((row) => row === params.data);
-
+  const handleSaveRow = (index) => {
+    // const editedTaskName = params.value;
+    // const rowIndex = rowData.findIndex((row) => row === params.data);
+    console.log("\nEdited Deadline: ", editedTask.deadline);
     const updatedRowData = [...rowData];
-    updatedRowData[rowIndex] = {
-      ...updatedRowData[rowIndex],
-      task_name: editedTask.task_name,
+    updatedRowData[index] = {
+      ...updatedRowData[index],
       deadline: editedTask.deadline,
-      status: editedTask.status,
     };
     setRowData(updatedRowData);
     setEditStatus(false);
@@ -191,6 +193,7 @@ const DataProvider = ({ children }) => {
   //   }
   // };
   const handleEditRow = useCallback((rowIndex) => {
+    // setCurrentEditNode(rowIndex);
     gridRef.current.api.setFocusedCell(rowIndex, "task_name");
     gridRef.current.api.startEditingCell({
       rowIndex,
@@ -198,20 +201,20 @@ const DataProvider = ({ children }) => {
     });
   }, []);
 
-  const handleInputChange = (selectedValue, field) => {
-    // const { value } = event.target;
-    setNewTask({ ...newTask, [field]: selectedValue });
-  };
-  const handleTextBoxInputChange = (event, field) => {
-    const { value } = event.target;
-    // setNewTask({ ...newTask, [field]: value });
-    setNewTask((prevState) => ({ ...prevState, [field]: value }));
-  };
-  const handleDateChange = (dateValue) => {
-    const formattedDate = dayjs(dateValue).format("MMM DD YYYY, h:mm a");
-    setNewDeadline(formattedDate);
-    // setNewTask({ ...newTask, deadline: formattedDate });
-  };
+  // const handleInputChange = (selectedValue, field) => {
+  //   // const { value } = event.target;
+  //   setNewTask({ ...newTask, [field]: selectedValue });
+  // };
+  // const handleTextBoxInputChange = (event, field) => {
+  //   const { value } = event.target;
+  //   // setNewTask({ ...newTask, [field]: value });
+  //   setNewTask((prevState) => ({ ...prevState, [field]: value }));
+  // };
+  // const handleDateChange = (dateValue) => {
+  //   const formattedDate = dayjs(dateValue).format("MMM DD YYYY, h:mm a");
+  //   setNewDeadline(formattedDate);
+  //   // setNewTask({ ...newTask, deadline: formattedDate });
+  // };
   return (
     <DataContext.Provider
       value={{
@@ -232,6 +235,8 @@ const DataProvider = ({ children }) => {
         setDisplayAddRowError,
         editStatus,
         setEditStatus,
+        editedTask,
+        setEditedTask,
         options,
         // taskNameRenderer,
         // deadlineRenderer,
@@ -240,11 +245,11 @@ const DataProvider = ({ children }) => {
         columnDefs,
         defaultColDef,
         handleAddRow,
-        handleInputChange,
+        // handleInputChange,
         handleDeleteRow,
         // handleEditRow,
-        handleTextBoxInputChange,
-        handleDateChange,
+        // handleTextBoxInputChange,
+        // handleDateChange,
         handleSaveRow,
       }}
     >

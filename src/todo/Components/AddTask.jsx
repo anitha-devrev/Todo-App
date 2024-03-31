@@ -19,7 +19,7 @@ const AddTask = () => {
   const {
     newTaskName,
     setNewTaskName,
-    newDeadline,
+    newDeadLine,
     setNewDeadline,
     newStatus,
     setNewStatus,
@@ -43,7 +43,7 @@ const AddTask = () => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateTimePicker
           label="Select Deadline"
-          value={newDeadline}
+          value={dayjs(newDeadLine)}
           onChange={(newDate) =>
             setNewDeadline(dayjs(newDate).format("MMM DD YYYY, h:mm a"))
           }
