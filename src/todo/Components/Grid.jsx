@@ -32,9 +32,9 @@ const Grid = () => {
         ref={gridRef}
         columnDefs={columnDefs}
         rowData={rowData}
-        rowClassRules={{
-          "hovered-row": (params) => params.rowIndex === hoveredRow,
-        }}
+        // rowClassRules={{
+        //   "hovered-row": (params) => params.rowIndex === hoveredRow,
+        // }}
         onCellMouseOver={(event) => {
           setHoveredRow(event.node.rowIndex);
           console.log("Hovered row: ", hoveredRow);
