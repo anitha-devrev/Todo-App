@@ -49,13 +49,12 @@ const TodoPage = () => {
     }
   }, [gridRef]);
   return (
-    <div className="flex flex-col justify-center align-middle h-500 w-800 grid-container min-h-screen bg-gradient-to-br from-blue-500 to-purple-500">
+    <div className="flex flex-col justify-center align-middle h-500 w-800 grid-container min-h-screen bg-gradient-to-br from-blue-500 to-purple-500 shrink">
       <Header />
       <div className="flex flex-col justify-center items-center justify-evenly h-[600px] w-[900px] bg-white rounded-xl bg-opacity-20 shadow-xl">
         <AddTask />
         <Grid />
       </div>
-
       <ErrorWindow />
       {/*  */}
     </div>

@@ -14,24 +14,10 @@ import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-mod
 import { ModuleRegistry } from "@ag-grid-community/core";
 import "react-dropdown/style.css";
 import "../styles/grid.css";
-import Dropdown from "react-dropdown";
-import { DateTimePicker } from "@mui/x-date-pickers";
 import { DeleteOutline, Edit, Save } from "@mui/icons-material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DateTimeField } from "@mui/x-date-pickers/DateTimeField";
-import {
-  Select,
-  MenuItem,
-  TextField,
-  InputLabel,
-  FormControl,
-  FormHelperText,
-} from "@mui/material";
-import dayjs from "dayjs";
-import CustomDateTimeEditor from "./CustomDateTimeEditor";
-import CustomTextEditor from "./CustomTextEditor";
-import CustomSelectEditor from "./CustomSelectEditor";
+import CustomDateTimeEditor from "./Cell Editors/CustomDateTimeEditor";
+import CustomTextEditor from "./Cell Editors/CustomTextEditor";
+import CustomSelectEditor from "./Cell Editors/CustomSelectEditor";
 ModuleRegistry.registerModules([ClientSideRowModelModule, RichSelectModule]);
 
 const DataContext = createContext();
@@ -74,7 +60,7 @@ const DataProvider = ({ children }) => {
     console.log("\nin actionsRenderer.. \nrowIndex = ", rowIndex);
     if (rowIndex === hoveredRow) {
       return (
-        <div className="flex justify-around items-center pt-2">
+        <div className="flex justify-left items-center pt-3">
           <Edit
             className="hover:text-blue-600 cursor-pointer"
             onClick={() => handleEditRow(rowIndex)}
@@ -130,6 +116,9 @@ const DataProvider = ({ children }) => {
       filter: true,
       editable: true,
       cellDataType: false,
+      headerClass: "header-style",
+      cellStyle: { textAlign: "left" },
+      height: "auto",
     }),
     []
   );
@@ -171,11 +160,6 @@ const DataProvider = ({ children }) => {
     console.log("New value:", newValue);
     console.log("Column name:", columnName);
     console.log("Row index:", rowIndex);
-
-    // setEditedTask((prevState) => ({
-    //   ...prevState,
-    //   [columnName]: newValue,
-    // }));
 
     if (columnName === "task_name") {
       setEditedTask((prevState) => ({

@@ -6,7 +6,7 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import { DataContext } from "./DataProvider";
+import { DataContext } from "../DataProvider";
 
 const CustomSelectEditor = ({ value }) => {
   const { editedTask, setEditedTask, options } = useContext(DataContext);
@@ -21,13 +21,12 @@ const CustomSelectEditor = ({ value }) => {
   };
 
   return (
-    <FormControl required sx={{ minWidth: 195 }}>
-      {/* <InputLabel id="demo-simple-select-label">Task Status</InputLabel> */}
+    <FormControl fullWidth required sx={{ minWidth: 195 }}>
       <Select
         labelId="task-status"
         id="task-status"
         value={newStatus}
-        //   label="Task Status"
+        className="bg-transparent"
         onChange={(e) => handleChange(e.target.value)}
       >
         <MenuItem value={options[0]}>{options[0]}</MenuItem>

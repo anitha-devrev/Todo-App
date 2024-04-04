@@ -9,7 +9,6 @@ const ErrorWindow = () => {
       <Modal
         isOpen={displayAddRowError}
         onRequestClose={() => setDisplayAddRowError(false)}
-        //   className='border-2 border-sky-500 mt-5 rounded-lg p-5'
         style={{
           content: {
             top: "50%",
@@ -21,7 +20,6 @@ const ErrorWindow = () => {
             width: "300px",
             padding: "20px",
             textAlign: "center",
-            // border: '1px solid brown',
             background: "linear-gradient(to right,red, brown)",
           },
         }}

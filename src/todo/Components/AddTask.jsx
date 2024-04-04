@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { DataContext } from "./DataProvider";
-import Dropdown from "react-dropdown";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimeField, DateTimePicker } from "@mui/x-date-pickers";
@@ -30,7 +29,7 @@ const AddTask = () => {
   return (
     <div
       id="add-task"
-      className="w-[800px] rounded-lg p-5 flex flex-row justify-between items-center bg-white bg-opacity-40 shadow-xl"
+      className="w-[800px] rounded-lg p-5 flex flex-row justify-between items-center bg-white bg-opacity-40 shadow-xl shrink"
     >
       <TextField
         required
@@ -77,15 +76,3 @@ const AddTask = () => {
 };
 
 export default AddTask;
-{
-  /* <DateTimeField
-          label="Enter Deadlines"
-          value={dayjs(newDeadline)} 
-          onChange={(dateValue) =>
-            setNewDeadline(dayjs(dateValue).format("MMM DD YYYY, h:mm a"))
-          }
-          disablePast={true}
-          defaultValue={MM/DD/YYYY HH:MM AM}
-          renderInput={(params) => <TextField {...params} />}
-        /> */
-}

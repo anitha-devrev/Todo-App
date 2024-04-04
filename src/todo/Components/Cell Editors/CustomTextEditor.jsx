@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import TextField from "@mui/material/TextField";
-import { DataContext } from "./DataProvider";
+import { DataContext } from "../DataProvider";
 
 const CustomTextEditor = ({ value }) => {
   const { editedTask, setEditedTask } = useContext(DataContext);
@@ -16,11 +16,12 @@ const CustomTextEditor = ({ value }) => {
 
   return (
     <TextField
+      fullWidth
+      className="h-5"
       required
       id="outlined-required"
       value={newTaskName}
       onChange={(e) => handleChange(e.target.value)}
-      //   label="Task Name"
       defaultValue=""
     />
   );
